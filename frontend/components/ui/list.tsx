@@ -1,12 +1,8 @@
+import type { Todo } from "../../types/todo";
 import Button from "./button";
 
-interface TodoItem {
-  id: number;
-  title: string;
-  completed: boolean;
-}
 
-export default function List({ items, onEdit, onToggleComplete, onDelete }: { items: TodoItem[]; onEdit: (id: number, newTitle: string) => void; onToggleComplete: (id: number) => void; onDelete: (id: number) => void }) {
+export default function List({ items, onEdit, onToggleComplete, onDelete }: { items: Todo[]; onEdit: (id: string, newTitle: string) => void; onToggleComplete: (id: string) => void; onDelete: (id: string) => void }) {
   return (
     <ul className="mt-4 space-y-2">
       {items.map((item) => (
