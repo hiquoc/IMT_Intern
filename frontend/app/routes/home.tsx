@@ -8,11 +8,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "../../components/ui/customToast";
 
 export default function Home() {
-  const { todos, addTodo, editTodo, toggleComplete, deleteTodo } = useTodo();
+  const { todos, addTodoMutation, editTodoMutation, toggleCompleteMutation, deleteTodoMutation } = useTodo();
   const [search, setSearch] = useState("");
   const [onlyCompleted, setOnlyCompleted] = useState(false);
 
-  const { register, handleSubmit, watch, reset, formState: { isSubmitting } } = useForm<newTodoForm>({
+  const { register, handleSubmit, watch, reset } = useForm<newTodoForm>({
     resolver: zodResolver(newTodoSchema),
     mode: "onSubmit",
     defaultValues: {
@@ -23,7 +23,7 @@ export default function Home() {
   const title = watch("title");
 
   const onSubmit = (data: newTodoForm) => {
-    addTodo(data.title);
+    addTodoMutation.mutate(data.title);
     reset();
   }
 
@@ -51,19 +51,19 @@ export default function Home() {
       </label>
       <div className="mt-6 border-t border-gray-200 w-200 mx-auto">
         <form className="mt-4 text-gray-600 flex items-center justify-center gap-2"
-          onSubmit={handleSubmit(onSubmit, onInvalid)}>
+        onSubmit={handleSubmit(onSubmit, onInvalid)}>
           <input type="text"
             {...register("title")}
             placeholder="Nhập công việc mới..." className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
           <Button
             color="blue"
-            disabled={!title?.trim() || isSubmitting}
+            disabled={!title?.trim() || addTodoMutation.isPending}
             type="submit"
           >
             Thêm
           </Button>
         </form>
-        <List items={filteredTodos} onToggleComplete={toggleComplete} onDelete={deleteTodo} onEdit={editTodo} />
+        <List items={filteredTodos} onToggleComplete={(id) => toggleCompleteMutation.mutate(id)} onDelete={(id) => deleteTodoMutation.mutate(id)} onEdit={(id, title) => editTodoMutation.mutate({ id, title })} />
       </div>
     </div>
   );

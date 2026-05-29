@@ -82,21 +82,5 @@ export default function useTodo() {
         },
     });
 
-    async function addTodo(newTitle: string) {
-        addTodoMutation.mutate(newTitle);
-    }
-
-    async function editTodo(id: string, newTitle: string) {
-        editTodoMutation.mutate({ id, title: newTitle });
-    }
-
-    async function toggleComplete(id: string) {
-        toggleCompleteMutation.mutate(id);
-    }
-
-    async function deleteTodo(id: string) {
-        deleteTodoMutation.mutate(id);
-    }
-
-    return { todos, isLoading, error, addTodo, editTodo, toggleComplete, deleteTodo };
+    return { todos, isLoading, error, addTodoMutation, editTodoMutation, toggleCompleteMutation, deleteTodoMutation };
 }

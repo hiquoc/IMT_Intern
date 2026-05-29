@@ -4,7 +4,6 @@ import { registerSchema, type RegisterForm } from "../../schemas/authSchema";
 import { toast } from "../../components/ui/customToast";
 import { Link } from "react-router";
 import useRegister from "../../hooks/auth/useRegister";
-import type { RegisterRequest } from "../../types/auth";
 import Button from "../../components/ui/button";
 
 export default function Register() {
