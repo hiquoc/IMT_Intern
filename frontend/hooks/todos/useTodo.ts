@@ -83,9 +83,7 @@ export default function useTodo() {
     });
 
     async function addTodo(newTitle: string) {
-        const title = newTitle.trim();
-        if (!title) return;
-        addTodoMutation.mutate(title);
+        addTodoMutation.mutate(newTitle);
     }
 
     async function editTodo(id: string, newTitle: string) {

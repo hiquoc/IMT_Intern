@@ -4,6 +4,7 @@ import { useForm, type FieldErrors } from "react-hook-form";
 import { Link } from "react-router";
 import { toast } from "../../components/ui/customToast";
 import useLogin from "../../hooks/auth/useLogin";
+import Button from "../../components/ui/button";
 
 export default function Login() {
     const { register, handleSubmit } = useForm<LoginForm>({
@@ -15,11 +16,11 @@ export default function Login() {
     });
     const loginMutation = useLogin();
 
-    async function onSubmit(data: LoginForm) {
+    const onSubmit = async (data: LoginForm) => {
         loginMutation.mutate(data);
     }
-    function onInvalid(errors: FieldErrors<LoginForm>) {
-        toast.error(errors.email?.message || errors.password?.message || "Thông tin đăng nhập không hợp lệ");
+    const onInvalid = (errors: FieldErrors<LoginForm>) => {
+        toast.error(Object.values(errors)[0]?.message || "Thông tin đăng nhập không hợp lệ");
     }
 
     return (
@@ -42,9 +43,9 @@ export default function Login() {
                             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-                    <button type="submit" disabled={loginMutation.isPending} className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">
+                    <Button type="submit" disabled={loginMutation.isPending} className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">
                         {loginMutation.isPending ? "Đang đăng nhập..." : "Đăng nhập"}
-                    </button>
+                    </Button>
                 </form>
                 <div className="text-center text-sm text-gray-600">
                     Chưa có tài khoản? <Link to="/register" className="text-blue-500 hover:underline">Đăng ký</Link>

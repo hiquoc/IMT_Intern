@@ -1,11 +1,26 @@
-export default function Button({color="blue",children,onClick,disabled=false}: {color?: 'blue' | 'green' | 'red', children: React.ReactNode, onClick?: () => void, disabled?: boolean}) {
+import type { ButtonHTMLAttributes } from "react";
+
+interface Ibutton extends ButtonHTMLAttributes<HTMLButtonElement> {
+    color?: 'blue' | 'green' | 'red',
+    children: React.ReactNode,
+    disabled?: boolean
+}
+
+export default function Button({ color = "blue", children, className, disabled = false, ...props }: Ibutton) {
     const colorClasses = {
-        blue: 'bg-blue-500 hover:bg-blue-600 text-white',
-        green: 'bg-green-500 hover:bg-green-600 text-white',
-        red: 'bg-red-500 hover:bg-red-600 text-white',
+        blue: "bg-blue-500 hover:bg-blue-600 text-white",
+        green: "bg-green-500 hover:bg-green-600 text-white",
+        red: "bg-red-500 hover:bg-red-600 text-white",
     };
     return (
-        <button className={`px-4 py-2 rounded-md ${colorClasses[color]} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={onClick} disabled={disabled}>
+        <button
+            className={`
+        px-4 py-2 rounded-md
+        ${colorClasses[color]}
+        ${className}
+      `}
+            {...props}
+        >
             {children}
         </button>
     );

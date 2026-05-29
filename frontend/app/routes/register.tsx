@@ -5,6 +5,7 @@ import { toast } from "../../components/ui/customToast";
 import { Link } from "react-router";
 import useRegister from "../../hooks/auth/useRegister";
 import type { RegisterRequest } from "../../types/auth";
+import Button from "../../components/ui/button";
 
 export default function Register() {
     const { register, handleSubmit } = useForm<RegisterForm>({
@@ -19,16 +20,11 @@ export default function Register() {
 
     const registerMutation = useRegister();
 
-    async function onSubmit(data: RegisterForm) {
-        const payload: RegisterRequest = {
-            email: data.email,
-            password: data.password,
-        };
-        registerMutation.mutate(payload);
+    const onSubmit = async ({ email, password }: RegisterForm) => {
+        registerMutation.mutate({ email, password });
     }
-    function onInvalid(errors: FieldErrors<RegisterForm>) {
-        const firstError = errors.confirmPassword?.message || errors.email?.message || errors.password?.message || "Thông tin đăng ký không hợp lệ";
-        toast.error(firstError);
+    const onInvalid=(errors: FieldErrors<RegisterForm>)=> {
+        toast.error(Object.values(errors)[0]?.message || "Thông tin đăng ký không hợp lệ");
     }
     return (
         <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -47,9 +43,10 @@ export default function Register() {
                         <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Xác nhận mật khẩu</label>
                         <input {...register("confirmPassword")} type="password" className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
-                    <button type="submit" disabled={registerMutation.isPending} className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">
+                    <Button type="submit" disabled={registerMutation.isPending}
+                        className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md">
                         {registerMutation.isPending ? "Đang đăng ký..." : "Đăng ký"}
-                    </button>
+                    </Button>
                 </form>
                 <div className="text-center text-sm text-gray-600">
                     Đã có tài khoản? <Link to="/login" className="text-blue-500 hover:underline">Đăng nhập</Link>

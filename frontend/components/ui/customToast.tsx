@@ -69,7 +69,7 @@ export function CustomToastHost() {
     return (
         <div className={
             `fixed top-4 right-4 z-50 px-4 py-2 rounded-md border
-             shadow-md text-sm${colorMap[type]}
+             shadow-md text-sm ${colorMap[type]}
              `}
         >
             {message}

@@ -9,7 +9,7 @@ async function getAllTodos(completed, userId) {
         completed
       })
     }
-    , orderBy: { createdAt:"asc" }
+    , orderBy: { createdAt: "asc" }
   });
 }
 
@@ -48,14 +48,18 @@ async function updateTodo(id, updateTodoDto, userId) {
 }
 
 async function updateCompletionStatus(id, userId) {
-  const todo = await prisma.todo.update({
+  const todo = await prisma.todo.findFirst({
     where: { id, userId },
-    data: { completed: true },
   });
-
-  if (!todo) {
-    throw createHttpError(404, `Todo item not found`);
-  }
+  if (!todo) 
+    throw createHttpError(404, "Todo item not found");
+  
+  return prisma.todo.update({
+    where: { id },
+    data: {
+      completed: !todo.completed,
+    },
+  });
 }
 
 async function deleteTodo(id, userId) {
