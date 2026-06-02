@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "../stores/authStore";
+import { refreshTokenApi } from "../services/authService";
 
 const api = axios.create({
   baseURL: import.meta.env.BACKEND_URL || "http://localhost:3000",
@@ -8,6 +9,23 @@ const api = axios.create({
   },
   withCredentials: true,
 });
+
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (error: Error) => void;
+}> = [];
+
+const processQueue = (token: string | null, error: Error | null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else if (token) {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
 
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token;
@@ -19,14 +37,48 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      const url = error.config?.url || "";
-      if (!url.includes("/auth/login") && !url.includes("/auth/register")) {
+  async (error) => {
+    const originalRequest = error.config;
+    const url = originalRequest?.url || "";
+
+    if (
+      error.response?.status === 401 &&
+      !url.includes("/login") &&
+      !url.includes("/register") &&
+      !url.includes("/refresh")
+    ) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      isRefreshing = true;
+
+      try {
+        const accessToken = await refreshTokenApi();
+        useAuthStore.getState().setLogin(
+          useAuthStore.getState().user!,
+          accessToken
+        );
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        processQueue(accessToken, null);
+        return api(originalRequest);
+      } catch (err) {
+        processQueue(null, err as Error);
         useAuthStore.getState().logout();
         window.location.href = "/login";
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
       }
     }
+
     return Promise.reject(error);
   }
 );

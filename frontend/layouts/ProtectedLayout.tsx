@@ -1,26 +1,24 @@
+import { useEffect, useState } from "react";
 import Header from "../components/ui/header";
-import { Navigate, Outlet } from "react-router";
 import { useAuthStore } from "../stores/authStore";
-import { useEffect } from "react";
-import { useState } from "react";
+import { Navigate, Outlet } from "react-router";
+
 
 export default function ProtectedLayout() {
-    const authenticated = useAuthStore((state) => state.token);
+    const token = useAuthStore((state) => state.token);
     const [hydrated, setHydrated] = useState(false);
 
     useEffect(() => {
         setHydrated(useAuthStore.persist.hasHydrated());
     }, []);
 
-    if (!hydrated) {
+    if(!hydrated) {
         return null;
     }
-
-    if (!authenticated) {
-        return (
-            <Navigate to="/login" replace />
-        );
+    if (!token) {
+        return <Navigate to="/login" replace />;
     }
+
     return (
         <>
             <Header />

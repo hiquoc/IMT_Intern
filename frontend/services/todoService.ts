@@ -1,10 +1,23 @@
 import type { Todo } from "../types/todo";
 import api from "../lib/api";
 
-export async function getTodos(completed?: boolean) {
-    const params = completed !== undefined ? { completed: String(completed) } : {};
+export interface PaginatedTodos {
+    items: Todo[];
+    total: number;
+    page: number;
+    size: number;
+    totalPages: number;
+}
+
+export async function getTodos(page?: number, size?: number, keyword?: string, completed?: boolean) {
+    const params = {
+        page: page ? String(page) : undefined,
+        size: size ? String(size) : undefined,
+        ...(keyword ? { keyword } : {}),
+        ...(completed !== undefined ? { completed: String(completed) } : {})
+    };
     const response = await api.get("/todos", { params });
-    return response.data.data as Todo[];
+    return response.data.data as PaginatedTodos;
 }
 
 export async function createTodo(title: string) {

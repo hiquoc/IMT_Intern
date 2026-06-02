@@ -17,13 +17,6 @@ export default function List({ items, onEdit, onToggleComplete, onDelete }: { it
     
 
           <div className="flex items-center gap-2">
-            {/* <span
-              className={`text-sm font-medium ${
-                item.completed ? "text-green-600" : "text-gray-600"
-              }`}
-            >
-              {item.completed ? "Xong" : "Chưa xong"}
-            </span> */}
             <Button color="green" onClick={() => onToggleComplete(item.id)}>
               {item.completed ? "Đã xong" : "Hoàn thành"}
             </Button>

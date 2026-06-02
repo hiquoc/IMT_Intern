@@ -1,5 +1,5 @@
 import createHttpError from "http-errors";
-import { verifyAccessToken } from "../utils/jwt.js"
+import { verifyAccessToken } from "../utils/jwt.util.js"
 
 export default function authenticate(req, res, next) {
     const authHeader = req.headers.authorization;
