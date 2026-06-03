@@ -9,7 +9,7 @@ async function getOwnedTodo(todoId, userId) {
   });
 
   if (!todo) {
-    throw createHttpError(404, 'Todo item not found');
+    throw createHttpError(404, 'TODO_NOT_FOUND');
   }
 
   return todo;
@@ -40,7 +40,7 @@ function uploadToCloudinary(file, todoId) {
 
 async function addAttachment(todoId, userId, file) {
   if (!file) {
-    throw createHttpError(400, 'Attachment file is required');
+    throw createHttpError(400, 'ATTACHMENT_REQUIRED');
   }
 
   await getOwnedTodo(todoId, userId);
@@ -72,7 +72,7 @@ async function deleteAttachment(todoId, attachmentId, userId) {
   });
 
   if (!attachment) {
-    throw createHttpError(404, 'Attachment not found');
+    throw createHttpError(404, 'ATTACHMENT_NOT_FOUND');
   }
 
   await cloudinary.uploader.destroy(attachment.publicId, {

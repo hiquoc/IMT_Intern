@@ -4,7 +4,7 @@ import { verifyAccessToken } from "../utils/jwt.util.js"
 export default function authenticate(req, res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return next(createHttpError(401, "Unauthorized"))
+        return next(createHttpError(401, "UNAUTHORIZED"))
     }
 
     const accessToken = authHeader.split(" ")[1]
@@ -14,6 +14,7 @@ export default function authenticate(req, res, next) {
         req.user = payload;
         next();
     } catch {
-        next(createHttpError(401, "Invalid token"))
+        next(createHttpError(401, "INVALID_TOKEN"))
     }
 }
+

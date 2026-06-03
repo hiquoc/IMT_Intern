@@ -1,0 +1,84 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "search": "Search",
+    "add": "Add",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit"
+  },
+  "header": {
+    "title": "Todo List",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "loggingIn": "Logging in...",
+    "registering": "Registering...",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "invalidLoginInfo": "Invalid login information",
+    "invalidRegisterInfo": "Invalid registration information"
+  },
+  "home": {
+    "title": "Todo List",
+    "searchPlaceholder": "Search todos...",
+    "showCompletedOnly": "Show completed only",
+    "addPlaceholder": "Enter new todo...",
+    "noError": "An error occurred"
+  },
+  "profile": {
+    "title": "User Information",
+    "emailLabel": "Email",
+    "noEmail": "No information available",
+    "sessions": "Active Sessions",
+    "sessionsDescription": "View all active sessions and logout other sessions.",
+    "logoutOtherSessions": "Logout Other Sessions",
+    "loadingSessions": "Loading sessions...",
+    "noSessions": "No active sessions.",
+    "currentSession": "Current Session",
+    "deviceLoggedIn": "Logged-in Device",
+    "unknown": "Unknown",
+    "ip": "IP",
+    "lastActive": "Last Active"
+  },
+  "todo": {
+    "done": "Done",
+    "markComplete": "Complete",
+    "delete": "Delete",
+    "addAttachment": "Add attachment",
+    "removeAttachment": "Remove attachment"
+  },
+  "errors": {
+    "EMAIL_REQUIRED": "Email is required",
+    "PASSWORD_MIN_LENGTH": "Password must be at least 6 characters",
+    "FIELDS_REQUIRED": "Email and password are required",
+    "EMAIL_ALREADY_EXISTS": "Email already exists",
+    "INCORRECT_CREDENTIALS": "Incorrect email or password",
+    "SESSION_REVOKED": "Session has been revoked",
+    "INVALID_SESSION_USER": "Invalid session user",
+    "INVALID_TOKEN": "Invalid token",
+    "UNAUTHORIZED": "Unauthorized",
+    "TITLE_REQUIRED": "Title is required",
+    "EMPTY_UPDATE": "At least one field must be provided",
+    "TODO_NOT_FOUND": "Todo item not found",
+    "ATTACHMENT_REQUIRED": "Attachment file is required",
+    "ATTACHMENT_NOT_FOUND": "Attachment not found",
+    "UNSUPPORTED_FILE_TYPE": "Unsupported file type",
+    "ROUTE_NOT_FOUND": "Page not found",
+    "INTERNAL_ERROR": "Internal server error",
+    "OTHER_SESSIONS_LOGGED_OUT": "Other sessions have been logged out",
+    "ATTACHMENT_SUCCESS": "Attachment uploaded successfully",
+    "DEFAULT": "An error occurred",
+    "CONFIRM_PASSWORD_MISMATCH": "Passwords do not match",
+    "CONFIRM_PASSWORD_REQUIRED": "Please confirm your password",
+    "TITLE_TOO_LONG": "Title is too long"
+  }
+}

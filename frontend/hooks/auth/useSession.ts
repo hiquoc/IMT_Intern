@@ -3,19 +3,20 @@ import { getSessionsApi, logoutOtherSessionsApi } from "../../services/authServi
 import type { Session } from "../../types/session";
 import { toast } from "../../components/ui/customToast";
 import { getErrorMessage } from "../../utils/errorMessage";
+import { useTranslation } from "react-i18next";
 
 const SESSION_QUERY_KEY = ["sessions"];
 
 export default function useSession() {
     const queryClient = useQueryClient();
+    const { t } = useTranslation();
 
     const { data: sessions = [], isLoading, error } = useQuery<Session[]>({
         queryKey: SESSION_QUERY_KEY,
         queryFn: getSessionsApi,
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 10 * 60 * 1000, // 10 minutes
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
     });
-
 
     const logoutOtherSessions = useMutation({
         mutationFn: logoutOtherSessionsApi,
@@ -26,9 +27,9 @@ export default function useSession() {
             );
         },
         onError: (err) => {
-            toast.error(getErrorMessage(err, "Đăng xuất các phiên khác thất bại"));
+            toast.error(getErrorMessage(err, t));
         }
-    })
+    });
 
     return { sessions, isLoading, error, logoutOtherSessions };
 }

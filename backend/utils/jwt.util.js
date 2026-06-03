@@ -43,7 +43,7 @@ function verifyAccessToken(token) {
     );
 
     if (payload.type !== "access") {
-        throw createHttpError(401, "Invalid token");
+        throw createHttpError(401, "INVALID_TOKEN");
     }
 
     return payload;
@@ -56,7 +56,7 @@ function verifyRefreshToken(token) {
     );
 
     if (payload.type !== "refresh") {
-        throw createHttpError(401, "Invalid token");
+        throw createHttpError(401, "INVALID_TOKEN");
     }
 
     return payload;

@@ -4,6 +4,8 @@ import routes from './routes/index.js'
 import notFoundMiddleware from './middlewares/notFound.middleware.js';
 import errorMiddleware from './middlewares/error.middleware.js';
 import cookieParser from 'cookie-parser';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './configs/swagger.config.js';
 
 const app = express();
 
@@ -14,11 +16,17 @@ app.use(cors({
 }));
 app.set("trust proxy", true);
 app.use(cookieParser());
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 app.use('/', routes);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 
 export default app
+
+
+
 
 

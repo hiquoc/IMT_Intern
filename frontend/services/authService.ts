@@ -14,7 +14,7 @@ export async function registerApi(data: RegisterRequest) {
 
 export async function refreshTokenApi() {
     const response = await axios.post(
-        "http://localhost:3000/auth/refresh",
+        `${process.env.BACKEND_URL || "http://localhost:3000"}/auth/refresh`,
         {},
         {
             withCredentials: true,

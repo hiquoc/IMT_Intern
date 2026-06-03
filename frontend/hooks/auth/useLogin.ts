@@ -4,10 +4,12 @@ import { useMutation } from "@tanstack/react-query";
 import { loginApi } from "../../services/authService";
 import { toast } from "../../components/ui/customToast";
 import { getErrorMessage } from "../../utils/errorMessage";
+import { useTranslation } from "react-i18next";
 
 export default function useLogin() {
     const navigate = useNavigate();
     const { setLogin } = useAuthStore();
+    const { t } = useTranslation();
 
     return useMutation({
         mutationFn: loginApi,
@@ -18,7 +20,7 @@ export default function useLogin() {
         },
 
         onError: (error) => {
-            toast.error(getErrorMessage(error,"Đăng nhập thất bại"));
+            toast.error(getErrorMessage(error, t, "errors.DEFAULT"));
         }
     })
 }

@@ -6,12 +6,27 @@ import { useForm, type FieldErrors } from "react-hook-form";
 import { newTodoSchema, type newTodoForm } from "../../schemas/todoSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "../../components/ui/customToast";
-import { Pagination } from 'antd';
-
+import { Pagination } from "antd";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
-  const { todos, addTodoMutation, editTodoMutation, toggleCompleteMutation, deleteTodoMutation,
-    uploadAttachmentMutation, deleteAttachmentMutation, page, size, totalPages, completedFilter, setPage, setCompletedFilter, setSearchKeyword } = useTodo();
+  const { t } = useTranslation();
+  const {
+    todos,
+    addTodoMutation,
+    editTodoMutation,
+    toggleCompleteMutation,
+    deleteTodoMutation,
+    uploadAttachmentMutation,
+    deleteAttachmentMutation,
+    page,
+    size,
+    totalPages,
+    completedFilter,
+    setPage,
+    setCompletedFilter,
+    setSearchKeyword,
+  } = useTodo();
   const [searchKeywordInput, setSearchKeywordInput] = useState("");
 
   useEffect(() => {
@@ -19,57 +34,71 @@ export default function Home() {
     if (currentPage) {
       setPage(Number(currentPage));
     }
-  }, [setPage])
-
+  }, [setPage]);
 
   const { register, handleSubmit, watch, reset } = useForm<newTodoForm>({
     resolver: zodResolver(newTodoSchema),
     mode: "onSubmit",
     defaultValues: {
-      title: ""
-    }
-  })
+      title: "",
+    },
+  });
 
   const title = watch("title");
 
   const onSubmit = (data: newTodoForm) => {
     addTodoMutation.mutate(data.title);
     reset();
-  }
+  };
 
   const onInvalid = (errors: FieldErrors<newTodoForm>) => {
-    const firstErrorMessage = Object.values(errors)[0]?.message || "Có lỗi xảy ra"
-    toast.error(firstErrorMessage)
-  }
+    const firstErrorMessage = Object.values(errors)[0]?.message || t("home.noError");
+    toast.error(firstErrorMessage);
+  };
 
   return (
-
     <div className="flex-1 p-6 flex flex-col items-center">
-      <h2 className="text-3xl font-semibold pt-4 text-center">Danh sách công việc</h2>
+      <h2 className="text-3xl font-semibold pt-4 text-center">{t("home.title")}</h2>
       <div>
-        <input type="text" value={searchKeywordInput} onChange={(e) => setSearchKeywordInput(e.target.value)} placeholder="Tìm kiếm công việc..."
-          className="w-50 px-4 py-2 text-center border rounded-md mt-4" />
+        <input
+          type="text"
+          value={searchKeywordInput}
+          onChange={(e) => setSearchKeywordInput(e.target.value)}
+          placeholder={t("home.searchPlaceholder")}
+          className="w-50 px-4 py-2 text-center border rounded-md mt-4"
+        />
         <Button color="blue" onClick={() => setSearchKeyword(searchKeywordInput)} className="ml-2">
-          Tìm kiếm
+          {t("common.search")}
         </Button>
       </div>
 
       <label className="mt-4 text-gray-600 flex items-center justify-center gap-2 cursor-pointer">
-        <input type="checkbox" onChange={(e) => setCompletedFilter(e.target.checked ? true : undefined)} checked={completedFilter === true} className="ml-4" />
-        <span className="ml-2 text-gray-600">Chỉ hiển thị công việc đã hoàn thành</span>
+        <input
+          type="checkbox"
+          onChange={(e) => setCompletedFilter(e.target.checked ? true : undefined)}
+          checked={completedFilter === true}
+          className="ml-4"
+        />
+        <span className="ml-2 text-gray-600">{t("home.showCompletedOnly")}</span>
       </label>
+
       <div className="mt-6 border-t border-gray-200 w-200 mx-auto">
-        <form className="mt-4 text-gray-600 flex items-center justify-center gap-2"
-          onSubmit={handleSubmit(onSubmit, onInvalid)}>
-          <input type="text"
+        <form
+          className="mt-4 text-gray-600 flex items-center justify-center gap-2"
+          onSubmit={handleSubmit(onSubmit, onInvalid)}
+        >
+          <input
+            type="text"
             {...register("title")}
-            placeholder="Nhập công việc mới..." className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            placeholder={t("home.addPlaceholder")}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
           <Button
             color="blue"
             disabled={!title?.trim() || addTodoMutation.isPending}
             type="submit"
           >
-            Thêm
+            {t("common.add")}
           </Button>
         </form>
         <List
@@ -78,16 +107,29 @@ export default function Home() {
           onDelete={(id) => deleteTodoMutation.mutate(id)}
           onEdit={(id, title) => editTodoMutation.mutate({ id, title })}
           onUploadAttachment={(id, file) => uploadAttachmentMutation.mutate({ todoId: id, file })}
-          onDeleteAttachment={(todoId, attachmentId) => deleteAttachmentMutation.mutate({ todoId, attachmentId })}
-          uploadingTodoId={uploadAttachmentMutation.isPending ? uploadAttachmentMutation.variables?.todoId : undefined}
-          deletingAttachmentId={deleteAttachmentMutation.isPending ? deleteAttachmentMutation.variables?.attachmentId : undefined}
+          onDeleteAttachment={(todoId, attachmentId) =>
+            deleteAttachmentMutation.mutate({ todoId, attachmentId })
+          }
+          uploadingTodoId={
+            uploadAttachmentMutation.isPending
+              ? uploadAttachmentMutation.variables?.todoId
+              : undefined
+          }
+          deletingAttachmentId={
+            deleteAttachmentMutation.isPending
+              ? deleteAttachmentMutation.variables?.attachmentId
+              : undefined
+          }
         />
         <div className="mt-4">
-          <Pagination className="" align="center"
+          <Pagination
+            className=""
+            align="center"
             current={page}
             total={totalPages}
             pageSize={size}
-            onChange={(page) => setPage(page)} />
+            onChange={(page) => setPage(page)}
+          />
         </div>
       </div>
     </div>

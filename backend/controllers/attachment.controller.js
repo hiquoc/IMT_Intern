@@ -6,7 +6,7 @@ const addAttachment = asyncHandle(async (req, res, next) => {
   const userId = req.user.userId;
   const attachment = await attachmentService.addAttachment(req.params.id, userId, req.file);
 
-  return res.status(201).json(successResponse(attachment, 'Attachment uploaded successfully'));
+  return res.status(201).json(successResponse(attachment, 'ATTACHMENT_SUCCESS'));
 });
 
 const getTodoAttachments = asyncHandle(async (req, res, next) => {

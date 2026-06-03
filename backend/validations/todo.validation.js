@@ -1,15 +1,17 @@
 import { z } from 'zod';
 
 export const createTodoSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
+  title: z.string().min(1, 'TITLE_REQUIRED'),
   completed: z.boolean().default(false),
 });
 
 export const updateTodoSchema = z
   .object({
-    title: z.string().min(1, 'Title must be a non-empty string').optional(),
+    title: z.string().min(1, 'TITLE_REQUIRED').optional(),
     completed: z.boolean().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
-    message: 'At least one field (title or completed) must be provided',
+    message: 'EMPTY_UPDATE',
   });
+
+

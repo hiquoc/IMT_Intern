@@ -11,13 +11,196 @@ import {
 
 const router = Router();
 
-router.get('/',authenticate, todoController.getAllTodos);
-router.get('/:id',authenticate, todoController.getTodoById);
-router.post('/',authenticate, validate(createTodoSchema), todoController.createTodo);
+/**
+ * @openapi
+ * /todos:
+ *   get:
+ *     summary: Get paginated list of todos
+ *     tags: [Todos]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: size
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: completed
+ *         schema:
+ *           type: boolean
+ *       - in: query
+ *         name: keyword
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+router.get('/', authenticate, todoController.getAllTodos);
+
+/**
+ * @openapi
+ * /todos/{id}:
+ *   get:
+ *     summary: Get todo by ID
+ *     tags: [Todos]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+router.get('/:id', authenticate, todoController.getTodoById);
+
+/**
+ * @openapi
+ * /todos:
+ *   post:
+ *     summary: Create a todo
+ *     tags: [Todos]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateTodoInput'
+ *     responses:
+ *       201:
+ *         description: Success
+ */
+router.post('/', authenticate, validate(createTodoSchema), todoController.createTodo);
+
+/**
+ * @openapi
+ * /todos/{id}/attachments:
+ *   post:
+ *     summary: Upload an attachment to a todo
+ *     tags: [Todos]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Success
+ */
 router.post('/:id/attachments', authenticate, uploadTodoAttachment, attachmentController.addAttachment);
-router.put('/:id',authenticate, validate(updateTodoSchema), todoController.updateTodo);
-router.patch('/:id',authenticate, todoController.updateCompletionStatus);
+
+/**
+ * @openapi
+ * /todos/{id}:
+ *   put:
+ *     summary: Update a todo
+ *     tags: [Todos]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateTodoInput'
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+router.put('/:id', authenticate, validate(updateTodoSchema), todoController.updateTodo);
+
+/**
+ * @openapi
+ * /todos/{id}:
+ *   patch:
+ *     summary: Toggle completion of a todo
+ *     tags: [Todos]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Success
+ */
+router.patch('/:id', authenticate, todoController.updateCompletionStatus);
+
+/**
+ * @openapi
+ * /todos/{id}/attachments/{attachmentId}:
+ *   delete:
+ *     summary: Delete a todo attachment
+ *     tags: [Todos]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: attachmentId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: Success
+ */
 router.delete('/:id/attachments/:attachmentId', authenticate, attachmentController.deleteAttachment);
-router.delete('/:id',authenticate, todoController.deleteTodo);
+
+/**
+ * @openapi
+ * /todos/{id}:
+ *   delete:
+ *     summary: Delete a todo
+ *     tags: [Todos]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Success
+ */
+router.delete('/:id', authenticate, todoController.deleteTodo);
 
 export default router;

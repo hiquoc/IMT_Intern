@@ -28,7 +28,7 @@ async function register(registerDto, ip, userAgent) {
 
     } catch (error) {
         if (error.code === "P2002") {
-            throw createHttpError(409, "Email already exists");
+            throw createHttpError(409, "EMAIL_ALREADY_EXISTS");
         }
         throw error;
     }
@@ -40,7 +40,7 @@ async function login(loginDto, ip, userAgent) {
         where: { email: loginDto.email },
     });
     if (!user || !(await bcrypt.compare(loginDto.password, user.hashedPassword))) {
-        throw createHttpError(401, "Incorrect email or password");
+        throw createHttpError(401, "INCORRECT_CREDENTIALS");
     }
 
     const accessToken = generateAccessToken(user);
@@ -60,7 +60,7 @@ async function refresh(refreshToken, ip, userAgent) {
     const valid = await hasSession(payload.userId, payload.jti);
 
     if (!valid) {
-        throw createHttpError(401, "Session revoked");
+        throw createHttpError(401, "SESSION_REVOKED");
     }
 
     const user = payload.email
@@ -68,7 +68,7 @@ async function refresh(refreshToken, ip, userAgent) {
         : await prisma.user.findUnique({ where: { id: payload.userId } });
 
     if (!user) {
-        throw createHttpError(401, "Invalid session user");
+        throw createHttpError(401, "INVALID_SESSION_USER");
     }
     const parser = new UAParser(userAgent);
     const info = parser.getResult();
@@ -113,19 +113,19 @@ export default {
 ////////////
 function validateRegisterDto(registerDto) {
     if (!registerDto.email || !registerDto.password) {
-        throw createHttpError(400, "Email and password are required");
+        throw createHttpError(400, "FIELDS_REQUIRED");
     }
     if (registerDto.password.length < 6) {
-        throw createHttpError(400, "Password must be at least 6 characters long");
+        throw createHttpError(400, "PASSWORD_MIN_LENGTH");
     }
     /// Additional validation for email format can be added here
 }
 function validateLoginDto(loginDto) {
     if (!loginDto.email || !loginDto.password) {
-        throw createHttpError(400, "Email and password are required");
+        throw createHttpError(400, "FIELDS_REQUIRED");
     }
     if (loginDto.password.length < 6) {
-        throw createHttpError(400, "Password must be at least 6 characters long");
+        throw createHttpError(400, "PASSWORD_MIN_LENGTH");
     }
 }
 function hashPassword(password) {

@@ -67,7 +67,7 @@ async function getTodoById(id, userId) {
   });
 
   if (!todo) {
-    throw createHttpError(404, `Todo item not found`);
+    throw createHttpError(404, 'TODO_NOT_FOUND');
   }
 
   return todo;
@@ -85,7 +85,7 @@ async function updateTodo(id, updateTodoDto, userId) {
   });
 
   if (!todo) {
-    throw createHttpError(404, `Todo item not found`);
+    throw createHttpError(404, 'TODO_NOT_FOUND');
   }
 
   return todo;
@@ -96,7 +96,7 @@ async function updateCompletionStatus(id, userId) {
     where: { id, userId },
   });
   if (!todo)
-    throw createHttpError(404, "Todo item not found");
+    throw createHttpError(404, "TODO_NOT_FOUND");
 
   return prisma.todo.update({
     where: { id },
@@ -114,7 +114,7 @@ async function deleteTodo(id, userId) {
     },
   });
   if (!todo) {
-    throw createHttpError(404, `Todo item not found`);
+    throw createHttpError(404, 'TODO_NOT_FOUND');
   }
 
   await Promise.all(

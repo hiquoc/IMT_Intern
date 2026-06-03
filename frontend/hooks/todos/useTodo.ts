@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient,keepPreviousData } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useState } from "react";
 import {
     createTodo,
@@ -12,11 +12,13 @@ import {
 } from "../../services/todoService";
 import { toast } from "../../components/ui/customToast";
 import { getErrorMessage } from "../../utils/errorMessage";
+import { useTranslation } from "react-i18next";
 
 const TODOS_QUERY_KEY = ["todos"];
 
 export default function useTodo(initialPage = 1, initialSize = 5) {
     const queryClient = useQueryClient();
+    const { t } = useTranslation();
     const [page, setPage] = useState<number>(initialPage);
     const [size, setSize] = useState<number>(initialSize);
     const [completedFilter, setCompletedFilterState] = useState<boolean | undefined>(undefined);
@@ -46,95 +48,62 @@ export default function useTodo(initialPage = 1, initialSize = 5) {
     const addTodoMutation = useMutation({
         mutationFn: createTodo,
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: TODOS_QUERY_KEY,
-            });
+            queryClient.invalidateQueries({ queryKey: TODOS_QUERY_KEY });
         },
         onError: (err) => {
-            toast.error(
-                getErrorMessage(err, "Thêm công việc thất bại")
-            );
+            toast.error(getErrorMessage(err, t));
         },
     });
 
     const editTodoMutation = useMutation({
         mutationFn: ({ id, title }: { id: string; title: string }) => updateTodo(id, title),
-
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: TODOS_QUERY_KEY,
-            });
+            queryClient.invalidateQueries({ queryKey: TODOS_QUERY_KEY });
         },
-
         onError: (err) => {
-            toast.error(
-                getErrorMessage(err, "Cập nhật công việc thất bại")
-            );
+            toast.error(getErrorMessage(err, t));
         },
     });
 
     const toggleCompleteMutation = useMutation({
         mutationFn: (id: string) => toggleTodoComplete(id),
-
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: TODOS_QUERY_KEY,
-            });
+            queryClient.invalidateQueries({ queryKey: TODOS_QUERY_KEY });
         },
-
         onError: (err) => {
-            toast.error(
-                getErrorMessage(err, "Cập nhật trạng thái thất bại")
-            );
+            toast.error(getErrorMessage(err, t));
         },
     });
 
     const deleteTodoMutation = useMutation({
         mutationFn: (id: string) => deleteTodoApi(id),
-
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: TODOS_QUERY_KEY,
-            });
+            queryClient.invalidateQueries({ queryKey: TODOS_QUERY_KEY });
         },
-
         onError: (err) => {
-            toast.error(
-                getErrorMessage(err, "Xóa công việc thất bại")
-            );
+            toast.error(getErrorMessage(err, t));
         },
     });
 
     const uploadAttachmentMutation = useMutation({
-        mutationFn: ({ todoId, file }: { todoId: string; file: File }) => uploadTodoAttachment(todoId, file),
-
+        mutationFn: ({ todoId, file }: { todoId: string; file: File }) =>
+            uploadTodoAttachment(todoId, file),
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: TODOS_QUERY_KEY,
-            });
+            queryClient.invalidateQueries({ queryKey: TODOS_QUERY_KEY });
         },
-
         onError: (err) => {
-            toast.error(
-                getErrorMessage(err, "Táº£i tá»‡p Ä‘Ã­nh kÃ¨m tháº¥t báº¡i")
-            );
+            toast.error(getErrorMessage(err, t));
         },
     });
 
     const deleteAttachmentMutation = useMutation({
         mutationFn: ({ todoId, attachmentId }: { todoId: string; attachmentId: number }) =>
             deleteTodoAttachment(todoId, attachmentId),
-
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: TODOS_QUERY_KEY,
-            });
+            queryClient.invalidateQueries({ queryKey: TODOS_QUERY_KEY });
         },
-
         onError: (err) => {
-            toast.error(
-                getErrorMessage(err, "XÃ³a tá»‡p Ä‘Ã­nh kÃ¨m tháº¥t báº¡i")
-            );
+            toast.error(getErrorMessage(err, t));
         },
     });
 

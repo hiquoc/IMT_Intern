@@ -37,7 +37,7 @@ const logout = asyncHandle(async (req, res, next) => {
 
 const logoutAllOtherSessions = asyncHandle(async (req, res, next) => {
     await authService.logoutAllOtherSessions(req.cookies.refreshToken);
-    res.status(200).json(successResponse("Other sessions have been logged out"));
+    res.status(200).json(successResponse("OTHER_SESSIONS_LOGGED_OUT"));
 })
 
 const getSessions = asyncHandle(async (req, res, next) => {
