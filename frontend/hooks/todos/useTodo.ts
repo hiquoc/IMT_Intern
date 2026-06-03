@@ -3,9 +3,11 @@ import { useState } from "react";
 import {
     createTodo,
     deleteTodo as deleteTodoApi,
+    deleteTodoAttachment,
     getTodos,
     toggleTodoComplete,
     updateTodo,
+    uploadTodoAttachment,
     type PaginatedTodos,
 } from "../../services/todoService";
 import { toast } from "../../components/ui/customToast";
@@ -103,6 +105,39 @@ export default function useTodo(initialPage = 1, initialSize = 5) {
         },
     });
 
+    const uploadAttachmentMutation = useMutation({
+        mutationFn: ({ todoId, file }: { todoId: string; file: File }) => uploadTodoAttachment(todoId, file),
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: TODOS_QUERY_KEY,
+            });
+        },
+
+        onError: (err) => {
+            toast.error(
+                getErrorMessage(err, "Táº£i tá»‡p Ä‘Ã­nh kÃ¨m tháº¥t báº¡i")
+            );
+        },
+    });
+
+    const deleteAttachmentMutation = useMutation({
+        mutationFn: ({ todoId, attachmentId }: { todoId: string; attachmentId: number }) =>
+            deleteTodoAttachment(todoId, attachmentId),
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: TODOS_QUERY_KEY,
+            });
+        },
+
+        onError: (err) => {
+            toast.error(
+                getErrorMessage(err, "XÃ³a tá»‡p Ä‘Ã­nh kÃ¨m tháº¥t báº¡i")
+            );
+        },
+    });
+
     const nextPage = () => setPage((p) => Math.min(totalPages, p + 1));
     const prevPage = () => setPage((p) => Math.max(1, p - 1));
 
@@ -114,6 +149,8 @@ export default function useTodo(initialPage = 1, initialSize = 5) {
         editTodoMutation,
         toggleCompleteMutation,
         deleteTodoMutation,
+        uploadAttachmentMutation,
+        deleteAttachmentMutation,
         page,
         size,
         totalPages,

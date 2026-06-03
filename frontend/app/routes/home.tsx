@@ -11,7 +11,7 @@ import { Pagination } from 'antd';
 
 export default function Home() {
   const { todos, addTodoMutation, editTodoMutation, toggleCompleteMutation, deleteTodoMutation,
-    page, size, totalPages, completedFilter, setPage, setCompletedFilter, setSearchKeyword } = useTodo();
+    uploadAttachmentMutation, deleteAttachmentMutation, page, size, totalPages, completedFilter, setPage, setCompletedFilter, setSearchKeyword } = useTodo();
   const [searchKeywordInput, setSearchKeywordInput] = useState("");
 
   useEffect(() => {
@@ -72,7 +72,16 @@ export default function Home() {
             Thêm
           </Button>
         </form>
-        <List items={todos} onToggleComplete={(id) => toggleCompleteMutation.mutate(id)} onDelete={(id) => deleteTodoMutation.mutate(id)} onEdit={(id, title) => editTodoMutation.mutate({ id, title })} />
+        <List
+          items={todos}
+          onToggleComplete={(id) => toggleCompleteMutation.mutate(id)}
+          onDelete={(id) => deleteTodoMutation.mutate(id)}
+          onEdit={(id, title) => editTodoMutation.mutate({ id, title })}
+          onUploadAttachment={(id, file) => uploadAttachmentMutation.mutate({ todoId: id, file })}
+          onDeleteAttachment={(todoId, attachmentId) => deleteAttachmentMutation.mutate({ todoId, attachmentId })}
+          uploadingTodoId={uploadAttachmentMutation.isPending ? uploadAttachmentMutation.variables?.todoId : undefined}
+          deletingAttachmentId={deleteAttachmentMutation.isPending ? deleteAttachmentMutation.variables?.attachmentId : undefined}
+        />
         <div className="mt-4">
           <Pagination className="" align="center"
             current={page}

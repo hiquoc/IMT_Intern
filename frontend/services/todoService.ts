@@ -1,4 +1,4 @@
-import type { Todo } from "../types/todo";
+import type { Attachment, Todo } from "../types/todo";
 import api from "../lib/api";
 
 export interface PaginatedTodos {
@@ -37,4 +37,21 @@ export async function toggleTodoComplete(id: string) {
 
 export async function deleteTodo(id: string) {
     await api.delete(`/todos/${id}`);
+}
+
+export async function uploadTodoAttachment(todoId: string, file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await api.post(`/todos/${todoId}/attachments`, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+
+    return response.data.data as Attachment;
+}
+
+export async function deleteTodoAttachment(todoId: string, attachmentId: number) {
+    await api.delete(`/todos/${todoId}/attachments/${attachmentId}`);
 }

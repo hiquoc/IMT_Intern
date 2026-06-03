@@ -1,5 +1,6 @@
 import createHttpError from 'http-errors';
 import prisma from '../libs/prisma.js';
+import cloudinary from '../configs/cloudinary.config.js';
 
 async function getAllTodos(userId, page = 1, size = 5, keyword, completed) {
   const p = parseInt(page, 10) || 1;
@@ -24,6 +25,11 @@ async function getAllTodos(userId, page = 1, size = 5, keyword, completed) {
     where,
     skip: (p - 1) * s,
     take: s,
+    include: {
+      attachments: {
+        orderBy: { createdAt: 'desc' },
+      },
+    },
     orderBy: { createdAt: "asc" }
   });
 
@@ -44,12 +50,20 @@ async function createTodo(createTodoDto, userId) {
       ...createTodoDto,
       userId,
     },
+    include: {
+      attachments: true,
+    },
   });
 }
 
 async function getTodoById(id, userId) {
   const todo = await prisma.todo.findFirst({
     where: { id, userId },
+    include: {
+      attachments: {
+        orderBy: { createdAt: 'desc' },
+      },
+    },
   });
 
   if (!todo) {
@@ -63,6 +77,11 @@ async function updateTodo(id, updateTodoDto, userId) {
   const todo = await prisma.todo.update({
     where: { id, userId },
     data: updateTodoDto,
+    include: {
+      attachments: {
+        orderBy: { createdAt: 'desc' },
+      },
+    },
   });
 
   if (!todo) {
@@ -88,13 +107,27 @@ async function updateCompletionStatus(id, userId) {
 }
 
 async function deleteTodo(id, userId) {
-  const todo = await prisma.todo.delete({
+  const todo = await prisma.todo.findUnique({
     where: { id, userId },
+    include: {
+      attachments: true,
+    },
   });
-
   if (!todo) {
     throw createHttpError(404, `Todo item not found`);
   }
+
+  await Promise.all(
+    todo.attachments.map((attachment) =>
+      cloudinary.uploader.destroy(attachment.publicId, {
+        resource_type: attachment.resourceType,
+      })
+    )
+  );
+
+  await prisma.todo.delete({
+    where: { id: todoId },
+  });
 }
 
 export default {
