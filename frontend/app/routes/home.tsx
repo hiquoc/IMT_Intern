@@ -21,6 +21,7 @@ export default function Home() {
     deleteAttachmentMutation,
     page,
     size,
+    total,
     totalPages,
     completedFilter,
     setPage,
@@ -126,9 +127,9 @@ export default function Home() {
             className=""
             align="center"
             current={page}
-            total={totalPages}
+            total={total}
             pageSize={size}
-            onChange={(page) => setPage(page)}
+            onChange={setPage}
           />
         </div>
       </div>

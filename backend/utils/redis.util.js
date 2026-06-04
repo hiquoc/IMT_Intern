@@ -5,6 +5,18 @@ export async function addSession(userId, jti, ip, userAgent) {
     const key = getKey(userId);
     const ts = Date.now();
 
+    const prevSessions = await redisClient.zRange(key, 0, -1);
+    if (prevSessions.length >= 5) {
+        const sessionsToRemove = prevSessions.slice(0, prevSessions.length - 4);
+
+        const multi = redisClient.multi();
+        for (const session of sessionsToRemove) {
+            multi.zRem(key, session);
+            multi.del(`session:${session}`);
+        }
+        await multi.exec();
+    }
+
     await redisClient.multi()
         .zAdd(key, {
             score: ts,
@@ -40,13 +52,21 @@ export async function removeAllSessions(userId, jti) {
 
     const sessionsToRemove = allSessions.filter(session => session !== jti);
 
-    console.log("Removing sessions:", sessionsToRemove);
-
     if (sessionsToRemove.length > 0) {
-        await redisClient.multi()
-            .zRem(key, ...sessionsToRemove)
-            .del(...sessionsToRemove.map(session => `session:${session}`))
-            .exec();
+        // console.log("Before:", await redisClient.zRange(key, 0, -1));
+
+        const multi = redisClient.multi();
+
+        for (const session of sessionsToRemove) {
+            multi.zRem(key, session);
+            multi.del(`session:${session}`);
+        }
+
+        await multi.exec();
+
+        // console.log("Exec result:", multi);
+
+        // console.log("After:", await redisClient.zRange(key, 0, -1));
     }
 }
 
@@ -84,13 +104,6 @@ export async function getAllSessions(userId, currentJti) {
             };
         })
     );
-
-    // sessions.sort((a, b) => b.createdAt - a.createdAt);
-
-    // return sessions.map(session=>({
-    //     ...session,
-    //     createdAt: new Date(session.createdAt).toISOString()
-    // }));
     return sessions;
 }
 

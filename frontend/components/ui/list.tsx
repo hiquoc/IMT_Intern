@@ -26,6 +26,7 @@ export default function List({
     <ul className="mt-5 space-y-3">
       {items.map((item) => {
         const isUploadingAttachment = uploadingTodoId === item.id;
+        const createdAt = item.createdAt ? new Date(item.createdAt) : null;
 
         return (
           <li
@@ -44,6 +45,14 @@ export default function List({
                   onChange={(e) => onEdit(item.id, e.target.value)}
                   className="w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-lg font-medium text-gray-900 outline-none focus:border-blue-300 focus:bg-white focus:ring-2 focus:ring-blue-100"
                 />
+                {createdAt && !Number.isNaN(createdAt.getTime()) && (
+                  <time
+                    dateTime={item.createdAt}
+                    className="mt-1 block px-2 text-xs text-gray-500"
+                  >
+                    Ngày tạo: {createdAt.toLocaleString("vi-VN")}
+                  </time>
+                )}
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   {item.attachments?.map((attachment) => {

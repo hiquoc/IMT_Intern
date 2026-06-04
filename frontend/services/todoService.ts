@@ -1,13 +1,6 @@
-import type { Attachment, Todo } from "../types/todo";
+import type { Attachment, PaginatedTodos, Todo } from "../types/todo";
 import api from "../lib/api";
 
-export interface PaginatedTodos {
-    items: Todo[];
-    total: number;
-    page: number;
-    size: number;
-    totalPages: number;
-}
 
 export async function getTodos(page?: number, size?: number, keyword?: string, completed?: boolean) {
     const params = {
@@ -32,7 +25,7 @@ export async function updateTodo(id: string, title: string) {
 
 export async function toggleTodoComplete(id: string) {
     const response = await api.patch(`/todos/${id}`, {});
-    return response.data;
+    return response.data.data as Todo;
 }
 
 export async function deleteTodo(id: string) {

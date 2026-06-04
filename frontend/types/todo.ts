@@ -18,3 +18,12 @@ export interface Todo {
     updatedAt: string;
     attachments?: Attachment[];
 }
+
+
+export interface PaginatedTodos {
+    items: Todo[];
+    total: number;
+    page: number;
+    size: number;
+    totalPages: number;
+}

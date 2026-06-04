@@ -60,6 +60,14 @@ async function addAttachment(todoId, userId, file) {
   });
 }
 
+async function getTodoAttachments(todoId, userId) {
+  await getOwnedTodo(todoId, userId);
+
+  return prisma.attachment.findMany({
+    where: { todoId },
+    orderBy: { createdAt: 'desc' },
+  });
+}
 
 async function deleteAttachment(todoId, attachmentId, userId) {
   await getOwnedTodo(todoId, userId);
@@ -86,5 +94,6 @@ async function deleteAttachment(todoId, attachmentId, userId) {
 
 export default {
   addAttachment,
+  getTodoAttachments,
   deleteAttachment,
 };

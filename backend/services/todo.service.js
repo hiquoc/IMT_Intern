@@ -19,19 +19,20 @@ async function getAllTodos(userId, page = 1, size = 5, keyword, completed) {
     })
   };
 
-  const total = await prisma.todo.count({ where });
-
-  const items = await prisma.todo.findMany({
-    where,
-    skip: (p - 1) * s,
-    take: s,
-    include: {
-      attachments: {
-        orderBy: { createdAt: 'desc' },
+  const [total, items] = await prisma.$transaction([
+    prisma.todo.count({ where }),
+    prisma.todo.findMany({
+      where,
+      skip: (p - 1) * s,
+      take: s,
+      include: {
+        attachments: {
+          orderBy: { createdAt: 'desc' },
+        },
       },
-    },
-    orderBy: { createdAt: "asc" }
-  });
+      orderBy: { createdAt: 'desc' },
+    }),
+  ]);
 
   const totalPages = Math.max(1, Math.ceil(total / s));
 
@@ -49,9 +50,6 @@ async function createTodo(createTodoDto, userId) {
     data: {
       ...createTodoDto,
       userId,
-    },
-    include: {
-      attachments: true,
     },
   });
 }
@@ -77,11 +75,6 @@ async function updateTodo(id, updateTodoDto, userId) {
   const todo = await prisma.todo.update({
     where: { id, userId },
     data: updateTodoDto,
-    include: {
-      attachments: {
-        orderBy: { createdAt: 'desc' },
-      },
-    },
   });
 
   if (!todo) {
@@ -126,7 +119,7 @@ async function deleteTodo(id, userId) {
   );
 
   await prisma.todo.delete({
-    where: { id: todoId },
+    where: { id },
   });
 }
 

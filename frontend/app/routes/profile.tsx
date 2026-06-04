@@ -12,8 +12,8 @@ export default function Profile() {
             return a.current ? -1 : 1;
         });
     }, [sessions]);
+    
 
-    console.log("User sessions:", sessions);
 
     return (
         <div className="flex-1 p-6">
