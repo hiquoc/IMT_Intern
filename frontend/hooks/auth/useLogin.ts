@@ -2,7 +2,7 @@ import { useNavigate } from "react-router";
 import { useAuthStore } from "../../stores/authStore";
 import { useMutation } from "@tanstack/react-query";
 import { loginApi } from "../../services/authService";
-import { toast } from "../../components/ui/customToast";
+import { toast } from "../../components/ui/toast";
 import { getErrorMessage } from "../../utils/errorMessage";
 import { useTranslation } from "react-i18next";
 

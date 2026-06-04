@@ -1,12 +1,12 @@
 import { useForm, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterForm } from "../../schemas/authSchema";
-import { toast } from "../../components/ui/customToast";
+import { toast } from "../../components/ui/toast";
 import { Link } from "react-router";
 import useRegister from "../../hooks/auth/useRegister";
-import Button from "../../components/ui/button";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../../components/ui/LanguageSwitcher";
+import { Button, Card, Form, Input, Space, Typography } from "antd";
 
 export default function Register() {
     const { t } = useTranslation();
@@ -31,57 +31,53 @@ export default function Register() {
     };
 
     return (
-        <div className="flex items-center justify-center h-screen bg-gray-100">
-            <div className="w-full max-w-md p-10 space-y-6 bg-white rounded-lg shadow-md">
-                <div className="flex justify-end">
-                    <LanguageSwitcher />
-                </div>
-                <h2 className="text-2xl font-bold text-center">{t("auth.register")}</h2>
-                <form className="space-y-4" onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            {t("auth.email")}
-                        </label>
-                        <input
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+            <Card style={{ width: "100%", maxWidth: 440 }}>
+                <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                        <LanguageSwitcher />
+                    </div>
+                    <Typography.Title level={2} style={{ margin: 0, textAlign: "center" }}>
+                        {t("auth.register")}
+                    </Typography.Title>
+                </Space>
+                <Form layout="vertical" onFinish={handleSubmit(onSubmit, onInvalid)} style={{ marginTop: 24 }}>
+                    <Form.Item label={t("auth.email")}>
+                        <Input
                             {...register("email")}
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            size="large"
                         />
-                    </div>
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            {t("auth.password")}
-                        </label>
-                        <input
+                    </Form.Item>
+                    <Form.Item label={t("auth.password")}>
+                        <Input.Password
                             {...register("password")}
-                            type="password"
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            size="large"
                         />
-                    </div>
-                    <div>
-                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                            {t("auth.confirmPassword")}
-                        </label>
-                        <input
+                    </Form.Item>
+                    <Form.Item label={t("auth.confirmPassword")}>
+                        <Input.Password
                             {...register("confirmPassword")}
-                            type="password"
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            size="large"
                         />
-                    </div>
+                    </Form.Item>
                     <Button
-                        type="submit"
+                        block
                         disabled={registerMutation.isPending}
-                        className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+                        htmlType="submit"
+                        loading={registerMutation.isPending}
+                        size="large"
+                        type="primary"
                     >
-                        {registerMutation.isPending ? t("auth.registering") : t("auth.register")}
+                        {t("auth.register")}
                     </Button>
-                </form>
-                <div className="text-center text-sm text-gray-600">
+                </Form>
+                <Typography.Paragraph type="secondary" style={{ margin: "24px 0 0", textAlign: "center" }}>
                     {t("auth.hasAccount")}{" "}
-                    <Link to="/login" className="text-blue-500 hover:underline">
+                    <Link to="/login">
                         {t("auth.login")}
                     </Link>
-                </div>
-            </div>
+                </Typography.Paragraph>
+            </Card>
         </div>
     );
 }

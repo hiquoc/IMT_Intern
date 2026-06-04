@@ -4,10 +4,11 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './locales/en.json';
 import vi from './locales/vi.json';
 
-i18n
+const i18nPromise = i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
+    lng: 'vi',
     resources: {
       en: { translation: en },
       vi: { translation: vi },
@@ -25,3 +26,4 @@ i18n
   });
 
 export default i18n;
+export { i18nPromise };

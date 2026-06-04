@@ -1,3 +1,4 @@
+import { Button as AntButton } from "antd";
 import type { ButtonHTMLAttributes } from "react";
 
 interface Ibutton extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -6,22 +7,30 @@ interface Ibutton extends ButtonHTMLAttributes<HTMLButtonElement> {
     disabled?: boolean
 }
 
-export default function Button({ color = "blue", children, className, disabled = false, ...props }: Ibutton) {
-    const colorClasses = {
-        blue: "bg-blue-500 hover:bg-blue-600 text-white",
-        green: "bg-green-500 hover:bg-green-600 text-white",
-        red: "bg-red-500 hover:bg-red-600 text-white",
+export default function Button({ color = "blue", children, className, disabled = false, type, ...props }: Ibutton) {
+    const antColor = {
+        blue: "primary",
+        green: "default",
+        red: "primary",
+    } as const;
+
+    const colorStyle = {
+        blue: undefined,
+        green: { borderColor: "#52c41a", color: "#389e0d" },
+        red: undefined,
     };
+
     return (
-        <button
-            className={`
-        px-4 py-2 rounded-md
-        ${colorClasses[color]}
-        ${className}
-      `}
+        <AntButton
+            danger={color === "red"}
+            disabled={disabled}
+            htmlType={type}
+            type={antColor[color]}
+            className={className}
+            style={colorStyle[color]}
             {...props}
         >
             {children}
-        </button>
+        </AntButton>
     );
 }

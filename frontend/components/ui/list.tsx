@@ -1,5 +1,6 @@
+import { Button, Card, Empty, Input, List as AntList, Space, Tag, Typography, Upload } from "antd";
+import { useTranslation } from "react-i18next";
 import type { Todo } from "../../types/todo";
-import Button from "./button";
 
 interface ListProps {
   items: Todo[];
@@ -22,111 +23,109 @@ export default function List({
   uploadingTodoId,
   deletingAttachmentId,
 }: ListProps) {
+  const { t } = useTranslation();
+
   return (
-    <ul className="mt-5 space-y-3">
-      {items.map((item) => {
+    <AntList
+      dataSource={items}
+      locale={{ emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} /> }}
+      renderItem={(item) => {
         const isUploadingAttachment = uploadingTodoId === item.id;
         const createdAt = item.createdAt ? new Date(item.createdAt) : null;
 
         return (
-          <li
-            key={item.id}
-            className={`rounded-md border p-4 shadow-sm transition ${
-              item.completed
-                ? "border-green-200 bg-green-50"
-                : "border-gray-200 bg-white hover:border-blue-200"
-            }`}
-          >
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0 flex-1">
-                <input
-                  type="text"
-                  value={item.title}
-                  onChange={(e) => onEdit(item.id, e.target.value)}
-                  className="w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-lg font-medium text-gray-900 outline-none focus:border-blue-300 focus:bg-white focus:ring-2 focus:ring-blue-100"
-                />
-                {createdAt && !Number.isNaN(createdAt.getTime()) && (
-                  <time
-                    dateTime={item.createdAt}
-                    className="mt-1 block px-2 text-xs text-gray-500"
-                  >
-                    Ngày tạo: {createdAt.toLocaleString("vi-VN")}
-                  </time>
-                )}
+          <AntList.Item style={{ paddingInline: 0 }}>
+            <Card
+              style={{
+                background: item.completed ? "#f6ffed" : "#fff",
+                borderColor: item.completed ? "#b7eb8f" : "#f0f0f0",
+                width: "100%",
+              }}
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <Space orientation="vertical" size="small" style={{ minWidth: 0, width: "100%" }}>
+                  <Input
+                    type="text"
+                    value={item.title}
+                    onChange={(e) => onEdit(item.id, e.target.value)}
+                    variant="borderless"
+                    style={{ fontSize: 18, fontWeight: 600, paddingInline: 0 }}
+                  />
+                  {createdAt && !Number.isNaN(createdAt.getTime()) && (
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                      <time dateTime={item.createdAt}>
+                        {createdAt.toLocaleString("vi-VN")}
+                      </time>
+                    </Typography.Text>
+                  )}
 
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  {item.attachments?.map((attachment) => {
-                    const isDeletingAttachment = deletingAttachmentId === attachment.id;
+                  <Space size={[8, 8]} wrap>
+                    {item.attachments?.map((attachment) => {
+                      const isDeletingAttachment = deletingAttachmentId === attachment.id;
 
-                    return (
-                      <span
-                        key={attachment.id}
-                        className={`inline-flex max-w-full items-center overflow-hidden rounded-md border border-gray-200 bg-gray-50 text-sm ${
-                          isDeletingAttachment ? "opacity-70" : ""
-                        }`}
-                      >
-                        <a
-                          href={attachment.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="max-w-56 truncate px-2 py-1 text-blue-700 hover:underline"
-                          title={attachment.name}
+                      return (
+                        <Tag
+                          key={attachment.id}
+                          closable
+                          closeIcon={isDeletingAttachment ? "..." : undefined}
+                          onClose={(event) => {
+                            event.preventDefault();
+
+                            if (!isDeletingAttachment) {
+                              onDeleteAttachment(item.id, attachment.id);
+                            }
+                          }}
+                          style={{background: isDeletingAttachment ? "#f5f5f5" : "#ffffff", border: isDeletingAttachment ? "1px solid #d9d9d9" : "1px solid #0088ff"}}
                         >
-                          {attachment.name}
-                        </a>
-                        <button
-                          type="button"
-                          onClick={() => onDeleteAttachment(item.id, attachment.id)}
-                          disabled={isDeletingAttachment}
-                          className="min-w-8 border-l border-gray-200 px-2 py-1 text-gray-500 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
-                          aria-label={`Remove ${attachment.name}`}
-                          title="Remove attachment"
-                        >
-                          {isDeletingAttachment ? "..." : "x"}
-                        </button>
-                      </span>
-                    );
-                  })}
+                          <a
+                            href={attachment.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            title={attachment.name}
+                            style={{ color: "#0088ff" }}
+                          >
+                            {attachment.name}
+                          </a>
+                        </Tag>
+                      );
+                    })}
 
-                  <label
-                    className={`inline-flex h-8 w-8 items-center justify-center rounded-md border border-dashed border-blue-300 bg-blue-50 text-lg font-semibold leading-none text-blue-600 hover:border-blue-400 hover:bg-blue-100 ${
-                      isUploadingAttachment
-                        ? "cursor-not-allowed opacity-70"
-                        : "cursor-pointer"
-                    }`}
-                    title="Add attachment"
-                    aria-busy={isUploadingAttachment}
-                  >
-                    {isUploadingAttachment ? "..." : "+"}
-                    <input
-                      type="file"
-                      className="hidden"
-                      disabled={isUploadingAttachment}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-
-                        if (file && !isUploadingAttachment) {
+                    <Upload
+                      beforeUpload={(file) => {
+                        if (!isUploadingAttachment) {
                           onUploadAttachment(item.id, file);
-                          e.target.value = "";
                         }
-                      }}
-                    />
-                  </label>
-                </div>
-              </div>
 
-              <div className="flex shrink-0 items-center gap-2">
-                <Button color="green" onClick={() => onToggleComplete(item.id)} className="text-sm">
-                  {item.completed ? "Đã xong" : "Hoàn thành"}
-                </Button>
-                <Button color="red" onClick={() => onDelete(item.id)} className="text-sm">
-                  Xóa
-                </Button>
+                        return false;
+                      }}
+                      disabled={isUploadingAttachment}
+                      maxCount={1}
+                      showUploadList={false}
+                    >
+                      <Button disabled={isUploadingAttachment} size="small">
+                        {isUploadingAttachment ? "..." : "+"}
+                      </Button>
+                    </Upload>
+                  </Space>
+                </Space>
+
+                <Space>
+                  <Button
+                    onClick={() => onToggleComplete(item.id)}
+                    style={{ borderColor: "#52c41a", color: "#389e0d" }}
+                  >
+                    {item.completed ? t("todo.done") : t("todo.markComplete")}
+                  </Button>
+                  <Button danger onClick={() => onDelete(item.id)}>
+                    {t("todo.delete")}
+                  </Button>
+                </Space>
               </div>
-            </div>
-          </li>
+            </Card>
+          </AntList.Item>
         );
-      })}
-    </ul>
+      }}
+      style={{ marginTop: 20 }}
+    />
   );
 }

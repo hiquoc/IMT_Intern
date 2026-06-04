@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import Button from "../../components/ui/button";
 import List from "../../components/ui/list";
 import useTodo from "../../hooks/todos/useTodo";
 import { useForm, type FieldErrors } from "react-hook-form";
 import { newTodoSchema, type newTodoForm } from "../../schemas/todoSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "../../components/ui/customToast";
-import { Pagination } from "antd";
+import { toast } from "../../components/ui/toast";
+import { Button, Card, Checkbox, Form, Input, Pagination, Space, Typography } from "antd";
 import { useTranslation } from "react-i18next";
 
 export default function Home() {
@@ -58,81 +57,79 @@ export default function Home() {
   };
 
   return (
-    <div className="flex-1 p-6 flex flex-col items-center">
-      <h2 className="text-3xl font-semibold pt-4 text-center">{t("home.title")}</h2>
-      <div>
-        <input
-          type="text"
-          value={searchKeywordInput}
-          onChange={(e) => setSearchKeywordInput(e.target.value)}
-          placeholder={t("home.searchPlaceholder")}
-          className="w-50 px-4 py-2 text-center border rounded-md mt-4"
-        />
-        <Button color="blue" onClick={() => setSearchKeyword(searchKeywordInput)} className="ml-2">
-          {t("common.search")}
-        </Button>
-      </div>
+    <main className="min-h-[calc(100vh-64px)] bg-gray-100 p-6">
+      <div className="mx-auto max-w-4xl">
 
-      <label className="mt-4 text-gray-600 flex items-center justify-center gap-2 cursor-pointer">
-        <input
-          type="checkbox"
-          onChange={(e) => setCompletedFilter(e.target.checked ? true : undefined)}
-          checked={completedFilter === true}
-          className="ml-4"
-        />
-        <span className="ml-2 text-gray-600">{t("home.showCompletedOnly")}</span>
-      </label>
+        <Card>
+          <Typography.Title level={2} style={{ textAlign: "center", marginBottom: 20 }}>
+            {t("home.title")}
+          </Typography.Title>
 
-      <div className="mt-6 border-t border-gray-200 w-200 mx-auto">
-        <form
-          className="mt-4 text-gray-600 flex items-center justify-center gap-2"
-          onSubmit={handleSubmit(onSubmit, onInvalid)}
-        >
-          <input
-            type="text"
-            {...register("title")}
-            placeholder={t("home.addPlaceholder")}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <Button
-            color="blue"
-            disabled={!title?.trim() || addTodoMutation.isPending}
-            type="submit"
-          >
-            {t("common.add")}
-          </Button>
-        </form>
-        <List
-          items={todos}
-          onToggleComplete={(id) => toggleCompleteMutation.mutate(id)}
-          onDelete={(id) => deleteTodoMutation.mutate(id)}
-          onEdit={(id, title) => editTodoMutation.mutate({ id, title })}
-          onUploadAttachment={(id, file) => uploadAttachmentMutation.mutate({ todoId: id, file })}
-          onDeleteAttachment={(todoId, attachmentId) =>
-            deleteAttachmentMutation.mutate({ todoId, attachmentId })
-          }
-          uploadingTodoId={
-            uploadAttachmentMutation.isPending
-              ? uploadAttachmentMutation.variables?.todoId
-              : undefined
-          }
-          deletingAttachmentId={
-            deleteAttachmentMutation.isPending
-              ? deleteAttachmentMutation.variables?.attachmentId
-              : undefined
-          }
-        />
-        <div className="mt-4">
-          <Pagination
-            className=""
-            align="center"
-            current={page}
-            total={total}
-            pageSize={size}
-            onChange={setPage}
-          />
-        </div>
+          <Space orientation="vertical" size="large" style={{ width: "100%" ,gap: 14}}>
+            <Input.Search
+              enterButton={t("common.search")}
+              onChange={(e) => setSearchKeywordInput(e.target.value)}
+              onSearch={() => setSearchKeyword(searchKeywordInput)}
+              placeholder={t("home.searchPlaceholder")}
+              size="large"
+              value={searchKeywordInput}
+            />
+
+            <Checkbox
+              checked={completedFilter === true}
+              onChange={(e) => setCompletedFilter(e.target.checked ? true : undefined)}
+            >
+              {t("home.showCompletedOnly")}
+            </Checkbox>
+
+            <Form onFinish={handleSubmit(onSubmit, onInvalid)} style={{ marginTop: 5 }}>
+              <Space.Compact style={{ width: "100%" }}>
+                <Input
+                  {...register("title")}
+                  placeholder={t("home.addPlaceholder")}
+                  size="large"
+                />
+                <Button
+                  size="large"
+                  disabled={!title?.trim() || addTodoMutation.isPending}
+                  htmlType="submit"
+                  type="primary"
+                >
+                  {t("common.add")}
+                </Button>
+              </Space.Compact>
+            </Form>
+
+            <List
+              items={todos}
+              onToggleComplete={(id) => toggleCompleteMutation.mutate(id)}
+              onDelete={(id) => deleteTodoMutation.mutate(id)}
+              onEdit={(id, title) => editTodoMutation.mutate({ id, title })}
+              onUploadAttachment={(id, file) => uploadAttachmentMutation.mutate({ todoId: id, file })}
+              onDeleteAttachment={(todoId, attachmentId) =>
+                deleteAttachmentMutation.mutate({ todoId, attachmentId })
+              }
+              uploadingTodoId={
+                uploadAttachmentMutation.isPending
+                  ? uploadAttachmentMutation.variables?.todoId
+                  : undefined
+              }
+              deletingAttachmentId={
+                deleteAttachmentMutation.isPending
+                  ? deleteAttachmentMutation.variables?.attachmentId
+                  : undefined
+              }
+            />
+            <Pagination
+              align="center"
+              current={page}
+              onChange={setPage}
+              pageSize={size}
+              total={total}
+            />
+          </Space>
+        </Card>
       </div>
-    </div>
+    </main>
   );
 }

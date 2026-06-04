@@ -22,7 +22,9 @@ export default function ProtectedLayout() {
     return (
         <>
             <Header />
-            <Outlet />
+            <div className="bg-gray-100" style={{ height: "100%" }}>
+                <Outlet />
+            </div>
         </>
     );
 }

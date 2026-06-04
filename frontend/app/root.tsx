@@ -7,12 +7,15 @@ import {
   ScrollRestoration,
 } from "react-router";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { App as AntApp, ConfigProvider } from "antd";
+import "antd/dist/reset.css";
 
 import type { Route } from "./+types/root";
 import "./app.css";
 import { queryClient } from "../lib/queryClient";
-import { CustomToastHost } from "../components/ui/customToast";
 import "../lib/i18n";
+import { ToastHolder } from "../components/ui/toast";
+import I18nLoader from "../components/ui/I18nLoader";
 
 
 export const links: Route.LinksFunction = () => [
@@ -47,12 +50,35 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-  
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <CustomToastHost />
+      <ConfigProvider
+        theme={{
+          token: {
+            borderRadius: 8,
+            colorPrimary: "#1677ff",
+            fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+          },
+          components: {
+            Segmented: {
+              itemSelectedBg: '#1677ff',
+              itemSelectedColor: '#fff',
+            },
+            Button: {
+              borderRadius: 4,
+            },
+          },
+        }}
+      >
+        <AntApp>
+          <ToastHolder />
+          <I18nLoader>
+            <Outlet />
+          </I18nLoader>
+        </AntApp>
+      </ConfigProvider>
     </QueryClientProvider>
   )
 }

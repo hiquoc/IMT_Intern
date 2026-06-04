@@ -11,7 +11,7 @@ import {
 
 } from "../../services/todoService";
 import type { Attachment, Todo, PaginatedTodos } from "../../types/todo";
-import { toast } from "../../components/ui/customToast";
+import { toast } from "../../components/ui/toast";
 import { getErrorMessage } from "../../utils/errorMessage";
 import { useTranslation } from "react-i18next";
 

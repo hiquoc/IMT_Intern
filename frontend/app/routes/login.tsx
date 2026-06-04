@@ -1,16 +1,15 @@
 import { loginSchema, type LoginForm } from "../../schemas/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type FieldErrors } from "react-hook-form";
+import { useForm, type FieldErrors, Controller } from "react-hook-form";
 import { Link } from "react-router";
-import { toast } from "../../components/ui/customToast";
+import { toast } from "../../components/ui/toast";
 import useLogin from "../../hooks/auth/useLogin";
-import Button from "../../components/ui/button";
 import { useTranslation } from "react-i18next";
-import LanguageSwitcher from "../../components/ui/LanguageSwitcher";
+import { Button, Card, Form, Input, Typography } from "antd";
 
 export default function Login() {
     const { t } = useTranslation();
-    const { register, handleSubmit } = useForm<LoginForm>({
+    const { register, handleSubmit, watch, control } = useForm<LoginForm>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
             email: "",
@@ -18,6 +17,12 @@ export default function Login() {
         },
     });
     const loginMutation = useLogin();
+
+    const email = watch("email");
+    console.log("Current email value:", email); // Debugging log
+
+    const password = watch("password");
+    console.log("Current password value:", password); // Debugging log
 
     const onSubmit = async (data: LoginForm) => {
         loginMutation.mutate(data);
@@ -28,47 +33,48 @@ export default function Login() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-            <div className="w-full max-w-md p-10 space-y-6 bg-white rounded-lg shadow-md">
-                <div className="flex justify-end">
-                    <LanguageSwitcher />
-                </div>
-                <h2 className="text-2xl font-bold text-center">{t("auth.login")}</h2>
-                <form className="space-y-4" onSubmit={handleSubmit(onSubmit, onInvalid)}>
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            {t("auth.email")}
-                        </label>
-                        <input
-                            {...register("email")}
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+            <Card style={{ width: "100%", maxWidth: 420 }}>
+                <Typography.Title level={2} style={{ marginBottom: 24, textAlign: "center" }}>
+                    {t("auth.login")}
+                </Typography.Title>
+                <Form layout="vertical" onFinish={handleSubmit(onSubmit, onInvalid)}>
+                    <Form.Item label={t("auth.email")}>
+                        <Controller
+                            name="email"
+                            control={control}
+                            render={({ field }) => (
+                                <Input {...field} size="large" />
+                            )}
                         />
-                    </div>
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            {t("auth.password")}
-                        </label>
-                        <input
-                            type="password"
-                            {...register("password")}
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    </Form.Item>
+                    <Form.Item label={t("auth.password")}>
+                        <Controller
+                            name="password"
+                            control={control}
+                            render={({ field }) => (
+                                <Input.Password {...field} size="large" />
+                            )}
                         />
-                    </div>
+                    </Form.Item>
                     <Button
-                        type="submit"
+                        block
                         disabled={loginMutation.isPending}
-                        className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+                        htmlType="submit"
+                        loading={loginMutation.isPending}
+                        size="large"
+                        type="primary"
                     >
-                        {loginMutation.isPending ? t("auth.loggingIn") : t("auth.login")}
+                        {t("auth.login")}
                     </Button>
-                </form>
-                <div className="text-center text-sm text-gray-600">
+                </Form>
+                <Typography.Paragraph type="secondary" style={{ margin: "24px 0 0", textAlign: "center" }}>
                     {t("auth.noAccount")}{" "}
-                    <Link to="/register" className="text-blue-500 hover:underline">
+                    <Link to="/register">
                         {t("auth.register")}
                     </Link>
-                </div>
-            </div>
-        </div>
+                </Typography.Paragraph>
+            </Card>
+        </div >
     );
 }

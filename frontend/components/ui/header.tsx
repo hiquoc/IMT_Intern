@@ -3,6 +3,7 @@ import { useAuthStore } from "../../stores/authStore";
 import { useLogout } from "../../hooks/auth/useLogout";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { Button, Layout, Space, Typography } from "antd";
 
 export default function Header() {
   const { user } = useAuthStore();
@@ -14,30 +15,34 @@ export default function Header() {
   };
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-300 shadow-sm">
-      <div>
-        <Link className="text-xl font-bold text-gray-800 flex items-center gap-2" to="/">
+    <Layout.Header
+      style={{
+        alignItems: "center",
+        background: "#fff",
+        borderBottom: "1px solid #f0f0f0",
+        display: "flex",
+        height: 64,
+        justifyContent: "space-between",
+        padding: "0 24px",
+      }}
+    >
+      <Typography.Title level={4} style={{ margin: 0 }}>
+        <Link to="/" style={{ color: "black" }}>
           {t("header.title")}
         </Link>
-      </div>
-      <div className="flex items-center gap-4">
+      </Typography.Title>
+      <Space size="middle" wrap>
         {user && (
-          <span className="text-sm text-gray-600">{user.email}</span>
+          <Typography.Text >{user.email}</Typography.Text>
         )}
         <LanguageSwitcher />
-        <Link
-          to="/profile"
-          className="px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-md"
-        >
-          {t("header.profile")}
+        <Link to="/profile">
+          <Button type="primary">{t("header.profile")}</Button>
         </Link>
-        <button
-          onClick={handleLogout}
-          className="px-3 py-1 text-sm bg-red-500 hover:bg-red-600 text-white rounded-md"
-        >
+        <Button danger type="primary" disabled={!user} onClick={handleLogout}>
           {t("header.logout")}
-        </button>
-      </div>
-    </header>
+        </Button>
+      </Space>
+    </Layout.Header >
   );
 }
